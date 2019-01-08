@@ -2,15 +2,15 @@ package ast
 
 import (
 	"fmt"
-	"github.com/macbinn/hacklang/buildin"
+	"github.com/macbinn/hacklang/builtin"
 )
 
 type Scope struct {
-	Vars   *buildin.Map
+	Vars   *builtin.Map
 	Parent *Scope
 }
 
-func (s *Scope) Get(name string) buildin.Object {
+func (s *Scope) Get(name string) builtin.Object {
 	return s.Vars.Get(name)
 }
 
@@ -20,7 +20,7 @@ func (s *Scope) Repr() string {
 
 func NewScope(parent *Scope) *Scope {
 	return &Scope{
-		Vars:   buildin.NewEmptyMap(),
+		Vars:   builtin.NewEmptyMap(),
 		Parent: parent,
 	}
 }
@@ -28,7 +28,7 @@ func NewScope(parent *Scope) *Scope {
 var GlobalScope = NewScope(nil)
 
 // Resolve resolve name in scope
-func (s *Scope) Resolve(name string) (buildin.Object, bool) {
+func (s *Scope) Resolve(name string) (builtin.Object, bool) {
 	for scope := s; scope != nil; scope = s.Parent {
 		v, ok := scope.Vars.Val[name]
 		if ok {
@@ -38,15 +38,15 @@ func (s *Scope) Resolve(name string) (buildin.Object, bool) {
 	return nil, false
 }
 
-func (s *Scope) Register(name string, v buildin.Object) {
+func (s *Scope) Register(name string, v builtin.Object) {
 	s.Vars.Val[name] = v
 }
 
 func init() {
 	GlobalScope.Register("global", GlobalScope)
-	GlobalScope.Register("print", buildin.Print)
-	GlobalScope.Register("sum", buildin.Sum)
-	GlobalScope.Register("type", buildin.Type)
-	GlobalScope.Register("web", buildin.WebExports)
-	GlobalScope.Register("json", buildin.Json)
+	GlobalScope.Register("print", builtin.Print)
+	GlobalScope.Register("sum", builtin.Sum)
+	GlobalScope.Register("type", builtin.Type)
+	GlobalScope.Register("web", builtin.WebExports)
+	GlobalScope.Register("json", builtin.Json)
 }

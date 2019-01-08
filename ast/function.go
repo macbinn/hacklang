@@ -2,7 +2,7 @@ package ast
 
 import (
 	"fmt"
-	"github.com/macbinn/hacklang/buildin"
+	"github.com/macbinn/hacklang/builtin"
 )
 
 type FunctionNode struct {
@@ -15,9 +15,9 @@ func (f *FunctionNode) String() string {
 	return fmt.Sprintf("<Function Arguments=%v, Body=%v>", f.Arguments, f.Body)
 }
 
-func (f *FunctionNode) Eval(scope *Scope) buildin.Object {
+func (f *FunctionNode) Eval(scope *Scope) builtin.Object {
 	f.Scope = NewScope(scope)
-	return buildin.NewFunction("f", func(args ...buildin.Object) buildin.Object {
+	return builtin.NewFunction("f", func(args ...builtin.Object) builtin.Object {
 		for i, arg := range args {
 			f.Scope.Register(f.Arguments[i], arg)
 		}

@@ -1,7 +1,7 @@
 package ast
 
-import "github.com/macbinn/hacklang/buildin"
+import "github.com/macbinn/hacklang/builtin"
 
 type Node interface {
-	Eval(scope *Scope) buildin.Object
+	Eval(scope *Scope) builtin.Object
 }
