@@ -1,12 +1,15 @@
 package builtin
 
-import "strings"
+import (
+	"github.com/macbinn/hacklang/value"
+	"strings"
+)
 
 type Map struct {
-	Val map[string]Object
+	Val map[string]value.Object
 }
 
-func (m *Map) Get(name string) Object {
+func (m *Map) Get(name string) value.Object {
 	return m.Val[name]
 }
 
@@ -21,7 +24,7 @@ func (m *Map) Repr() string {
 		}
 		builder.WriteString(name)
 		builder.WriteString(": ")
-		obj := val.(Object)
+		obj := val.(value.Object)
 		builder.WriteString(obj.Repr())
 		i --
 		if i > 0 {
@@ -32,7 +35,7 @@ func (m *Map) Repr() string {
 	return builder.String()
 }
 
-func NewMap(v map[string]Object) *Map {
+func NewMap(v map[string]value.Object) *Map {
 	return &Map{
 		Val: v,
 	}
@@ -40,7 +43,7 @@ func NewMap(v map[string]Object) *Map {
 
 func NewEmptyMap() *Map {
 	return &Map{
-		Val: map[string]Object{},
+		Val: map[string]value.Object{},
 	}
 }
 

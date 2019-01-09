@@ -2,7 +2,7 @@ package ast
 
 import (
 	"fmt"
-	"github.com/macbinn/hacklang/builtin"
+	"github.com/macbinn/hacklang/value"
 )
 
 type ExprList struct {
@@ -13,8 +13,8 @@ func (e *ExprList) String() string {
 	return fmt.Sprintf("<ExprList Nodes=%s>", e.Nodes)
 }
 
-func (e *ExprList) Eval(scope *Scope) builtin.Object {
-	var obj builtin.Object
+func (e *ExprList) Eval(scope *value.Scope) value.Object {
+	var obj value.Object
 	for _, node := range e.Nodes {
 		obj = node.Eval(scope)
 	}

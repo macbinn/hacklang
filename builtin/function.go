@@ -2,41 +2,42 @@ package builtin
 
 import (
 	"fmt"
+	"github.com/macbinn/hacklang/value"
 )
 
 type Function struct {
 	Name *String
-	fn func(...Object) Object
+	fn func(...value.Object) value.Object
 }
 
 func (f *Function) Repr() string {
-	return fmt.Sprintf("<function %s>", f.Name.s)
+	return fmt.Sprintf("<function %s>", f.Name.S)
 }
 
-func (f *Function) Get(name string) Object {
+func (f *Function) Get(name string) value.Object {
 	if name == "name" {
 		return f.Name
 	}
 	return nil
 }
 
-func (f *Function) Func() func(...Object) Object {
+func (f *Function) Func() func(...value.Object) value.Object {
 	return f.fn
 }
 
-func NewFunction(name string, v func(...Object) Object) *Function {
+func NewFunction(name string, v func(...value.Object) value.Object) *Function {
 	return &Function{
 		Name: NewString(name),
 		fn: v,
 	}
 }
 
-func print(args ...Object) Object {
+func print(args ...value.Object) value.Object {
 	for _, arg := range args {
 		s, ok := arg.(*String)
 		if ok {
-			fmt.Printf("%s ", s.s)
-		} else if args == nil {
+			fmt.Printf("%s ", s.S)
+		} else if arg == nil {
 			fmt.Printf("<nil> ")
 		} else {
 			fmt.Printf("%s ", arg.Repr())
@@ -46,7 +47,7 @@ func print(args ...Object) Object {
 	return nil
 }
 
-func sum(args ...Object) Object {
+func sum(args ...value.Object) value.Object {
 	sum := 0
 	for _, a := range args {
 		n := a.(*Number)
@@ -55,7 +56,7 @@ func sum(args ...Object) Object {
 	return NewNumber(sum)
 }
 
-func getType(args ...Object) Object {
+func getType(args ...value.Object) value.Object {
 	obj := args[0]
 	switch obj.(type) {
 	case *String:
@@ -79,3 +80,9 @@ var (
 	Sum = NewFunction("sum", sum)
 	Type = NewFunction("type", getType)
 )
+
+func init() {
+	GlobalScope.Register("print", Print)
+	GlobalScope.Register("sum", Sum)
+	GlobalScope.Register("type", Type)
+}

@@ -2,22 +2,23 @@ package builtin
 
 import (
 	"container/list"
+	"github.com/macbinn/hacklang/value"
 	"strings"
 )
 
 type List struct {
-	l *list.List
+	L *list.List
 }
 
-func (l *List) Get(name string) Object {
+func (l *List) Get(name string) value.Object {
 	return nil
 }
 
 func (l *List) Repr() string {
 	builder := new(strings.Builder)
 	builder.WriteByte('[')
-	for i := l.l.Front(); i != nil; i = i.Next() {
-		obj := i.Value.(Object)
+	for i := l.L.Front(); i != nil; i = i.Next() {
+		obj := i.Value.(value.Object)
 		builder.WriteString(obj.Repr())
 		if i.Next() != nil {
 			builder.WriteString(", ")
@@ -27,13 +28,19 @@ func (l *List) Repr() string {
 	return builder.String()
 }
 
+func NewEmptyList() *List {
+	return &List{
+		L: list.New(),
+	}
+}
+
 func NewList(l *list.List) *List {
-	return &List{l: l}
+	return &List{L: l}
 }
 
 var listMethods = map[string]interface{}{}
 
-func (l *List) G(name string) *Object {
+func (l *List) G(name string) *value.Object {
 	//method, ok := listMethods[name]
 	//if !ok {
 	//	return nil

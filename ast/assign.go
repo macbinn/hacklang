@@ -2,7 +2,7 @@ package ast
 
 import (
 	"fmt"
-	"github.com/macbinn/hacklang/builtin"
+	"github.com/macbinn/hacklang/value"
 )
 
 type AssignNode struct {
@@ -14,7 +14,7 @@ func (a *AssignNode) String() string {
 	return fmt.Sprintf("<Assign Left=%v Right=%v>", a.Left, a.Right)
 }
 
-func (a *AssignNode) Eval(scope *Scope) builtin.Object {
+func (a *AssignNode) Eval(scope *value.Scope) value.Object {
 	if a.Right == nil {
 		return nil
 	}

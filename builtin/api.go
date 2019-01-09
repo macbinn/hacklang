@@ -1,14 +1,9 @@
 package builtin
 
-import "fmt"
-
-// Object is the basic value in the hacklang world
-type Object interface {
-	// everything has `getter`
-	Get(name string) Object
-	// how to print in repl
-	Repr() string
-}
+import (
+	"fmt"
+	"github.com/macbinn/hacklang/value"
+)
 
 type Number struct {
 	Int int
@@ -18,7 +13,7 @@ func (n *Number) Repr() string {
 	return fmt.Sprintf("%d", n.Int)
 }
 
-func (n *Number) Get(name string) Object {
+func (n *Number) Get(name string) value.Object {
 	return nil
 }
 
@@ -39,7 +34,7 @@ func (b *Bool) Repr() string {
 	return "false"
 }
 
-func (*Bool) Get(name string) Object {
+func (*Bool) Get(name string) value.Object {
 	return nil
 }
 

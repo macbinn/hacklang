@@ -1,0 +1,3 @@
+CREATE TABLE IF NOT EXISTS `users` (
+  `name` VARCHAR(16) NOT NULL DEFAULT ''
+);

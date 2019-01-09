@@ -3,7 +3,7 @@ package repl
 import (
 	"bufio"
 	"fmt"
-	"github.com/macbinn/hacklang/ast"
+	"github.com/macbinn/hacklang/builtin"
 	"github.com/macbinn/hacklang/parser"
 	"io"
 	"log"
@@ -33,7 +33,7 @@ func Repl(r io.Reader, w io.Writer) error {
 			fmt.Fprintf(w, "error %s\n", err)
 		} else {
 			// log.Printf("%s\n", node)
-			obj := node.Eval(ast.GlobalScope)
+			obj := node.Eval(builtin.GlobalScope)
 			if obj != nil {
 				fmt.Fprintf(w, "%s\n", obj.Repr())
 			} else {

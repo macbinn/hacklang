@@ -3,6 +3,7 @@ package builtin
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/macbinn/hacklang/value"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -13,22 +14,22 @@ type WebContext struct {
 	Req *http.Request
 	w http.ResponseWriter
 	Body *String
-	JsonBody Object
-	Query Object
+	JsonBody value.Object
+	Query value.Object
 }
 
-func (w *WebContext) Get(name string) Object {
+func (w *WebContext) Get(name string) value.Object {
 	switch name {
 	case "json":
-		return NewFunction("webContext.json", func(args ...Object) Object {
+		return NewFunction("webContext.json", func(args ...value.Object) value.Object {
 			w.Json(Convert(args[0]))
 			return nil
 		})
 	case "resp":
-		return NewFunction("webContext.resp", func(args ...Object) Object {
+		return NewFunction("webContext.resp", func(args ...value.Object) value.Object {
 			code := args[0].(*Number).Int
-			contentType := args[1].(*String).s
-			body := args[2].(*String).s
+			contentType := args[1].(*String).S
+			body := args[2].(*String).S
 			w.Resp(code, contentType, body)
 			return nil
 		})
@@ -58,7 +59,7 @@ func (w *WebContext) Json(v interface{}) {
 	}
 }
 
-func (w *WebContext) ReadJson() Object {
+func (w *WebContext) ReadJson() value.Object {
 	if w.JsonBody == nil {
 		var m map[string]interface{}
 		err := json.NewDecoder(w.Req.Body).Decode(&m)
@@ -72,7 +73,7 @@ func (w *WebContext) ReadJson() Object {
 	return w.JsonBody
 }
 
-func (w *WebContext) ReadQuery() Object {
+func (w *WebContext) ReadQuery() value.Object {
 	if w.Query == nil {
 		query := w.Req.URL.Query()
 		m := map[string]interface{}{}
@@ -109,14 +110,14 @@ func (w *WebContext) readBody() *String {
 type Router struct {
 	Pattern string
 	Regexp *regexp.Regexp
-	Get func(...Object) Object
-	Post func(...Object) Object
+	Get func(...value.Object) value.Object
+	Post func(...value.Object) value.Object
 }
 
 var routers = map[string]Router{}
 
-func Route(args ...Object) Object {
-	pattern := args[0].(*String).s
+func Route(args ...value.Object) value.Object {
+	pattern := args[0].(*String).S
 	getHandler := args[1].(*Function).fn
 	postHandler := args[2].(*Function).fn
 	p, err := regexp.Compile(pattern)
@@ -162,13 +163,17 @@ func (handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Run(args ...Object) Object {
-	addr := args[0].(*String).s
+func Run(args ...value.Object) value.Object {
+	addr := args[0].(*String).S
 	http.ListenAndServe(addr, handler{})
 	return nil
 }
 
-var WebExports = NewMap(map[string]Object{
+var WebExports = NewMap(map[string]value.Object{
 	"route": NewFunction("web.route", Route),
 	"run": NewFunction("web.run", Run),
 })
+
+func init() {
+	GlobalScope.Register("web", WebExports)
+}

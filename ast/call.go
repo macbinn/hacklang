@@ -3,6 +3,7 @@ package ast
 import (
 	"fmt"
 	"github.com/macbinn/hacklang/builtin"
+	"github.com/macbinn/hacklang/value"
 )
 
 type CallNode struct {
@@ -14,8 +15,8 @@ func (c *CallNode) String() string {
 	return fmt.Sprintf("<Call Callee=%s Arguments=%s>", c.Callee, c.Arguments)
 }
 
-func (c *CallNode) Eval(scope *Scope) builtin.Object {
-	var args []builtin.Object
+func (c *CallNode) Eval(scope *value.Scope) value.Object {
+	var args []value.Object
 	for _, arg := range c.Arguments {
 		args = append(args, arg.Eval(scope))
 	}

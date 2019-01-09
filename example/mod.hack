@@ -1,0 +1,3 @@
+i => {
+  print(`hello`, i)
+}
