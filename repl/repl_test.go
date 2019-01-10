@@ -94,6 +94,10 @@ func TestRepl(t *testing.T) {
 			in: "json.encode([1, 2, 3])",
 			out: "`[1,2,3]`",
 		},
+		{
+			in: "{}",
+			out: "{}",
+		},
 		// todo: make it work
 		//{"`hello`.upper().lower()\n", "hello\n -> "},
 	}

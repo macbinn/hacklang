@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/macbinn/hacklang/ast"
 	"github.com/macbinn/hacklang/token"
+	"io/ioutil"
 )
 
 type Parser struct {
@@ -73,6 +74,19 @@ func (p *Parser) Parse() (ast.Node, error) {
 	node, _, err := ParseGreedy(p.tokens, names...)
 	if err != nil {
 		return nil, ErrSyntaxError
+	}
+	return node, nil
+}
+
+func ParseFile(file string) (ast.Node, error) {
+	code, err := ioutil.ReadFile(file)
+	if err != nil {
+		return nil, err
+	}
+	p := NewParser(code)
+	node, err := p.Parse()
+	if err != nil {
+		return nil, err
 	}
 	return node, nil
 }

@@ -10,6 +10,10 @@ type StringNode struct {
 	Value string
 }
 
+func (s *StringNode) Code() string {
+	return fmt.Sprintf("`%s`", s.Value)
+}
+
 func (s *StringNode) String() string {
 	return fmt.Sprintf("<String %s>", s.Value)
 }

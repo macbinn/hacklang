@@ -33,6 +33,17 @@ func (w *WebContext) Get(name string) value.Object {
 			w.Resp(code, contentType, body)
 			return nil
 		})
+	case "static":
+		return NewFunction("webContext.static", func(args ...value.Object) value.Object {
+			file := args[0].(*String).S
+			bs, err := ioutil.ReadFile(file)
+			if err != nil {
+				w.Resp(500, "", "")
+				return nil
+			}
+			w.Resp(200, "text/html", string(bs))
+			return nil
+		})
 	case "body":
 		return w.readBody()
 	case "jsonBody":

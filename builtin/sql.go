@@ -13,45 +13,57 @@ type Table struct {
 	name string
 }
 
+func (t *Table) all() value.Object {
+	rows, err := t.db.Query("select * from " + t.name)
+	if err != nil {
+		log.Print(err)
+		return nil
+	}
+	types, err := rows.ColumnTypes()
+	if err != nil {
+		log.Print(err)
+		return nil
+	}
+	list := NewEmptyList()
+	for rows.Next() {
+		m := NewEmptyMap()
+		var dst []interface{}
+		for _, t := range types {
+			//log.Printf("%s %s", t.Name(), t.DatabaseTypeName())
+			// todo: check more types
+			if t.DatabaseTypeName() == "INTEGER" {
+				s := NewNumber(0)
+				m.Val[t.Name()] = s
+				dst = append(dst, &s.Int)
+			} else {
+				s := NewString("")
+				m.Val[t.Name()] = s
+				dst = append(dst, &s.S)
+			}
+		}
+		err := rows.Scan(dst...)
+		if err != nil {
+			log.Print(err)
+			return nil
+		}
+		list.L.PushBack(m)
+	}
+	return list
+}
+
+func (t *Table) new(args ...value.Object) value.Object {
+	return nil
+}
+
 func (t *Table) Get(name string) value.Object {
 	switch name {
 	case "all":
 		return NewFunction("sql.Table.all", func(args ...value.Object) value.Object {
-			rows, err := t.db.Query("select * from " + t.name)
-			if err != nil {
-				log.Print(err)
-				return nil
-			}
-			types, err := rows.ColumnTypes()
-			if err != nil {
-				log.Print(err)
-				return nil
-			}
-			list := NewEmptyList()
-			for rows.Next() {
-				m := NewEmptyMap()
-				var dst []interface{}
-				for _, t := range types {
-					//log.Printf("%s %s", t.Name(), t.DatabaseTypeName())
-					// todo: check more types
-					if t.DatabaseTypeName() == "INTEGER" {
-						s := NewNumber(0)
-						m.Val[t.Name()] = s
-						dst = append(dst, &s.Int)
-					} else {
-						s := NewString("")
-						m.Val[t.Name()] = s
-						dst = append(dst, &s.S)
-					}
-				}
-				err := rows.Scan(dst...)
-				if err != nil {
-					log.Print(err)
-					return nil
-				}
-				list.L.PushBack(m)
-			}
-			return list
+			return t.all()
+		})
+	case "new":
+		return NewFunction("sql.Table.new", func(args ...value.Object) value.Object {
+			return t.new(args...)
 		})
 	}
 	return nil

@@ -10,6 +10,10 @@ type AssignNode struct {
 	Right Node
 }
 
+func (a *AssignNode) Code() string {
+	return fmt.Sprintf("%s = %s", a.Left.Code(), a.Right.Code())
+}
+
 func (a *AssignNode) String() string {
 	return fmt.Sprintf("<Assign Left=%v Right=%v>", a.Left, a.Right)
 }

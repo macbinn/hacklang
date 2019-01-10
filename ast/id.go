@@ -10,9 +10,14 @@ type IdNode struct {
 	Name string
 }
 
+func (i *IdNode) Code() string {
+	return i.Name
+}
+
 func (i *IdNode) String() string {
 	return fmt.Sprintf("<Id Name=%s>", i.Name)
 }
+
 
 func (i *IdNode) Eval(scope *value.Scope) value.Object {
 	v, ok := scope.Resolve(i.Name)

@@ -10,6 +10,10 @@ type NumberNode struct {
 	Value int
 }
 
+func (n *NumberNode) Code() string {
+	return fmt.Sprintf("%d", n.Value)
+}
+
 func (n *NumberNode) String() string {
 	return fmt.Sprintf("<Number %d>", n.Value)
 }

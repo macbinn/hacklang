@@ -4,11 +4,21 @@ import (
 	"fmt"
 	"github.com/macbinn/hacklang/builtin"
 	"github.com/macbinn/hacklang/value"
+	"strings"
 )
 
 type CallNode struct {
 	Callee    Node
 	Arguments []Node
+}
+
+func (c *CallNode) Code() string {
+	var args []string
+	for _, node := range c.Arguments {
+		args = append(args, node.Code())
+	}
+	argsCode := strings.Join(args, ", ")
+	return fmt.Sprintf("%s(%s)", c.Callee.Code(), argsCode)
 }
 
 func (c *CallNode) String() string {

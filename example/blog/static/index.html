@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Blog</title>
+  <style>
+    input, textarea, button {
+      padding: 5px;
+      width: 300px;
+    }
+    button {
+      width: 100px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+    }
+    .form div {
+      padding: 10px 0;
+    }
+    .blog {
+      padding: 20px 0;
+      border-bottom: solid 1px #eee;
+    }
+    .title {
+      font-size: 18px;
+      font-weight: bolder;
+    }
+    .time {
+      font-size: 12px;
+      text-align: right;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+</head>
+<body>
+  <div id="app">
+    <div class="container">
+      <h2>{{ logo }}</h2>
+      <div class="form">
+        <div>
+          <input v-model="title" placeholder="title"/>
+        </div>
+        <div>
+          <textarea v-model="content" placeholder="content"></textarea>
+        </div>
+        <div>
+          <button @click="post">Post</button>
+        </div>
+      </div>
+      <div v-for="blog in blogs" class="blog">
+        <div class="title">{{ blog.title }}</div>
+        <div class="content">{{ blog.content }}</div>
+        <div class="time">{{ blog.created_at }}</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    var app = new Vue({
+      el: "#app",
+      data: {
+        logo: 'Blog',
+        title: '',
+        content: '',
+        blogs: [],
+      },
+      created() {
+        fetch('/api/blogs/').then(resp => {
+          return resp.json()
+        }).then(blogs => {
+          this.blogs = blogs
+        })
+      },
+      methods: {
+        post() {
+          fetch('/api/blogs/', {
+            method: 'POST',
+            body: JSON.stringify({
+              title: this.title,
+              content: this.content,
+            })
+          }).then(resp => {
+            return resp.json()
+          }).then(result => {
+            console.log(result)
+          })
+        },
+      },
+    })
+  </script>
+</body>
+</html>

@@ -14,6 +14,7 @@ func (exprHandler) Parse(tokens []*token.Token) (ast.Node, int, error) {
 		"string",
 		"bool",
 		"list",
+		"map",
 		"call",
 		"id",
 		"function",

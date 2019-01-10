@@ -4,8 +4,7 @@ import (
 	"github.com/macbinn/hacklang/builtin"
 	"github.com/macbinn/hacklang/parser"
 	"github.com/macbinn/hacklang/value"
-	"io/ioutil"
-	"log"
+	"github.com/prometheus/common/log"
 	"strings"
 )
 
@@ -19,12 +18,7 @@ func resolveFile(file string) string {
 }
 
 func ExecFile(file string) value.Object {
-	code, err := ioutil.ReadFile(resolveFile(file))
-	if err != nil {
-		log.Fatal(err)
-	}
-	p := parser.NewParser(code)
-	node, err := p.Parse()
+	node, err := parser.ParseFile(resolveFile(file))
 	if err != nil {
 		log.Fatal(err)
 	}

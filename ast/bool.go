@@ -10,6 +10,10 @@ type BoolNode struct {
 	Value bool
 }
 
+func (b *BoolNode) Code() string {
+	return fmt.Sprintf("%v", b.Value)
+}
+
 func (b *BoolNode) String() string {
 	return fmt.Sprintf("<Bool %v>", b.Value)
 }

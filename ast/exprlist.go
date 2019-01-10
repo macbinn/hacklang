@@ -3,10 +3,19 @@ package ast
 import (
 	"fmt"
 	"github.com/macbinn/hacklang/value"
+	"strings"
 )
 
 type ExprList struct {
 	Nodes []Node
+}
+
+func (e *ExprList) Code() string {
+	var exprs []string
+	for _, node := range e.Nodes {
+		exprs = append(exprs, node.Code())
+	}
+	return strings.Join(exprs, "\n")
 }
 
 func (e *ExprList) String() string {

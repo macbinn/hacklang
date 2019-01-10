@@ -10,6 +10,10 @@ type DotNode struct {
 	Right Node
 }
 
+func (d *DotNode) Code() string {
+	return fmt.Sprintf("%s.%s", d.Left.Code(), d.Right.Code())
+}
+
 func (d *DotNode) String() string {
 	return fmt.Sprintf("<Dot Left=%s Right=%s>", d.Left, d.Right)
 }
