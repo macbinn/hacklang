@@ -43,3 +43,8 @@ func NewBool(v bool) *Bool {
 		Val: v,
 	}
 }
+
+var (
+	BoolTrue = NewBool(true)
+	BoolFalse = NewBool(false)
+)
