@@ -98,6 +98,10 @@ func TestRepl(t *testing.T) {
 			in: "{}",
 			out: "{}",
 		},
+		{
+			in: "a = {} a.a = 1 a.a",
+			out: "1",
+		},
 		// todo: make it work
 		//{"`hello`.upper().lower()\n", "hello\n -> "},
 	}

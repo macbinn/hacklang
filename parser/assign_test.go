@@ -35,6 +35,11 @@ func TestAssignHandler_Parse(t *testing.T) {
 			node: "<Assign Left=<Id Name=a> Right=<Assign Left=<Id Name=b> Right=<Number 1>>>",
 		},
 		{
+			code: "a.b = 1",
+			pos: 5,
+			node: "<Assign Left=<Dot Left=<Id Name=a> Right=<Id Name=b>> Right=<Number 1>>",
+		},
+		{
 			code: "",
 			err: ErrSyntaxError,
 		},

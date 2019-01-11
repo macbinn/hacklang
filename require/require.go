@@ -4,7 +4,7 @@ import (
 	"github.com/macbinn/hacklang/builtin"
 	"github.com/macbinn/hacklang/parser"
 	"github.com/macbinn/hacklang/value"
-	"github.com/prometheus/common/log"
+	"log"
 	"strings"
 )
 
@@ -25,12 +25,20 @@ func ExecFile(file string) value.Object {
 	return node.Eval(builtin.GlobalScope)
 }
 
+var requireCache = map[string]value.Object{}
+
 // require file
 // sql = require(`sql`)
 // sql.connect(`xxx`)
 func require(args ...value.Object) value.Object {
 	fn := args[0].(*builtin.String).S
-	return ExecFile(fn)
+	mod, ok := requireCache[fn]
+	if !ok {
+		//log.Printf("require(%s)", fn)
+		mod = ExecFile(fn)
+		requireCache[fn] = mod
+	}
+	return mod
 }
 
 var (

@@ -9,18 +9,28 @@ type assignHandler struct {
 }
 
 func (assignHandler) Parse(tokens []*token.Token) (ast.Node, int, error) {
-	if len(tokens) < 3 || tokens[0].Type != token.ID || tokens[1].Type != token.EQUAL {
+	if len(tokens) < 3 {
 		return nil, 0, ErrSyntaxError
 	}
-	exprNode, pos, err := Parse("expr", tokens[2:])
+	leftExpr, pos, err := ParseGreedy(tokens, "id", "dot")
+	if err != nil {
+		return nil, 0, ErrSyntaxError
+	}
+	if pos >= len(tokens) ||
+		tokens[pos].Type != token.EQUAL {
+		return nil, 0, ErrSyntaxError
+	}
+	pos ++
+	rightExpr, i, err := Parse("expr", tokens[pos:])
 	if err != nil {
 		return nil, 0, ErrSyntaxError
 	}
 	node := &ast.AssignNode{
-		Left:  &ast.IdNode{Name: tokens[0].Value},
-		Right: exprNode,
+		Left:  leftExpr,
+		Right: rightExpr,
 	}
-	return node, pos + 2, nil
+	pos += i
+	return node, pos, nil
 }
 
 func init() {

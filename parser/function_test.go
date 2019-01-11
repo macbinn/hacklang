@@ -24,6 +24,11 @@ func TestFunctionHandler_Parse(t *testing.T) {
 			pos: 11,
 			node: "<Function Arguments=[a b c], Body=[]>",
 		},
+		{
+			code: "i => { a = {} print(a) }",
+			pos: 13,
+			node: "<Function Arguments=[i], Body=[<Assign Left=<Id Name=a> Right=<Map>> <Call Callee=<Id Name=print> Arguments=[<Id Name=a>]>]>",
+		},
 	}
 	testHandler(t, functionHandler{}, cases)
 }

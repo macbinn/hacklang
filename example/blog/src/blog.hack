@@ -20,4 +20,6 @@ web.route(`^/api/blogs/(\d+)$`, (ctx, id) => {
   ctx.json(ok)
 })
 
+require(`src/user`)
+
 web.run(`:8080`)
