@@ -7,9 +7,20 @@
     input, textarea, button {
       padding: 5px;
       width: 300px;
+      border-radius: 5px;
+      border: 1px solid #dcdfe6;
+      outline: none;
     }
     button {
       width: 100px;
+      background-color: #409eff;
+      color: #fff;
+    }
+    a, a:visited {
+      text-decoration: none;
+    }
+    textarea {
+      width: 500px;
     }
     .container {
       max-width: 600px;
@@ -21,14 +32,20 @@
     .blog {
       padding: 20px 0;
       border-bottom: solid 1px #eee;
+      display: flex;
+      flex-direction: column;
     }
     .title {
       font-size: 18px;
       font-weight: bolder;
     }
-    .time {
+    .op {
+      display: flex;
       font-size: 12px;
-      text-align: right;
+      align-self: flex-end;
+    }
+    .del {
+      margin-left: 10px;
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/vue"></script>
@@ -42,7 +59,7 @@
           <input v-model="title" placeholder="title"/>
         </div>
         <div>
-          <textarea v-model="content" placeholder="content"></textarea>
+          <textarea v-model="content" placeholder="content" rows="4"></textarea>
         </div>
         <div>
           <button @click="post">Post</button>
@@ -51,7 +68,12 @@
       <div v-for="blog in blogs" class="blog">
         <div class="title">{{ blog.title }}</div>
         <div class="content">{{ blog.content }}</div>
-        <div class="time">{{ blog.created_at }}</div>
+        <div class="op">
+          <div class="time">{{ blog.created_at }}</div>
+          <div class="del">
+            <a href="javascript:void(0)" @click="del(blog.id)">delete</a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -65,14 +87,25 @@
         blogs: [],
       },
       created() {
-        fetch('/api/blogs/').then(resp => {
-          return resp.json()
-        }).then(blogs => {
-          this.blogs = blogs
-        })
+        this.loadBlogs()
       },
       methods: {
+        loadBlogs() {
+          fetch('/api/blogs/').then(resp => {
+            return resp.json()
+          }).then(blogs => {
+            this.blogs = blogs.sort((a, b) => {
+              if (a.created_at < b.created_at) {
+                return 1
+              }
+              return -1
+            })
+          })
+        },
         post() {
+          if (!this.title || !this.content) {
+            return
+          }
           fetch('/api/blogs/', {
             method: 'POST',
             body: JSON.stringify({
@@ -82,9 +115,24 @@
           }).then(resp => {
             return resp.json()
           }).then(result => {
-            console.log(result)
+            if (result) {
+              this.title = ''
+              this.content = ''
+              this.loadBlogs()
+            }
           })
         },
+        del(id) {
+          fetch(`/api/blogs/${id}`, {
+            method: 'POST',
+          }).then(resp => {
+            return resp.json()
+          }).then(result => {
+            if (result) {
+              this.loadBlogs()
+            }
+          })
+        }
       },
     })
   </script>

@@ -20,7 +20,7 @@ func (f *FunctionNode) Code() string {
 		bodys = append(bodys, "  " + node.Code())
 	}
 	body := strings.Join(bodys, "\n")
-	return fmt.Sprintf("%s => {\n%s\n}", args, body)
+	return fmt.Sprintf("(%s) => {\n%s\n}", args, body)
 }
 
 func (f *FunctionNode) String() string {
@@ -31,7 +31,9 @@ func (f *FunctionNode) Eval(scope *value.Scope) value.Object {
 	f.Scope = value.NewScope(scope)
 	return builtin.NewFunction("f", func(args ...value.Object) value.Object {
 		for i, arg := range args {
-			f.Scope.Register(f.Arguments[i], arg)
+			if i < len(f.Arguments) {
+				f.Scope.Register(f.Arguments[i], arg)
+			}
 		}
 		for _, node := range f.Body {
 			node.Eval(f.Scope)

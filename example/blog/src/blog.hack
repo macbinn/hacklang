@@ -13,4 +13,11 @@ web.route(`^/api/blogs/$`, ctx => {
   ctx.json(true)
 })
 
+web.route(`^/api/blogs/(\d+)$`, (ctx, id) => {
+
+}, (ctx, id) => {
+  ok = dao.blogs.del(id)
+  ctx.json(ok)
+})
+
 web.run(`:8080`)

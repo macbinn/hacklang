@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"strconv"
 )
 
 type WebContext struct {
@@ -152,19 +153,32 @@ type handler struct {
 func (handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	routerFound := false
 	for _, router := range routers {
-		if !router.Regexp.MatchString(r.URL.Path) {
+		matched := router.Regexp.FindStringSubmatch(r.URL.Path)
+		if matched == nil {
 			continue
 		}
+		//log.Printf("matched: %v", matched)
 		routerFound = true
 		ctx := &WebContext{
 			Req: r,
 			w: w,
 		}
+		args := []value.Object{
+			ctx,
+		}
+		for _, s := range matched[1:] {
+			n, err := strconv.Atoi(s)
+			if err == nil {
+				args = append(args, NewNumber(n))
+			} else {
+				args = append(args, NewString(s))
+			}
+		}
 		switch r.Method {
 		case http.MethodGet:
-			router.Get(ctx)
+			router.Get(args ...)
 		case http.MethodPost:
-			router.Post(ctx)
+			router.Post(args ...)
 		default:
 			w.WriteHeader(405)
 		}

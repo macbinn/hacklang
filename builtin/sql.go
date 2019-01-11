@@ -6,6 +6,7 @@ import (
 	"github.com/macbinn/hacklang/value"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
+	"strings"
 )
 
 type Table struct {
@@ -52,6 +53,43 @@ func (t *Table) all() value.Object {
 }
 
 func (t *Table) new(args ...value.Object) value.Object {
+	m := args[0].(*Map).Val
+	var cols []string
+	var vals []string
+	var values []interface{}
+	for name, val := range m {
+		cols = append(cols, name)
+		vals = append(vals, "?")
+		values = append(values, Convert(val))
+	}
+	colstr := strings.Join(cols, ", ")
+	valstr := strings.Join(vals, ", ")
+	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", t.name, colstr, valstr)
+	result, err := t.db.Exec(query, values...)
+	if err != nil {
+		return nil
+	}
+	id, err := result.LastInsertId()
+	if err != nil {
+		return nil
+	}
+	m["id"] = NewNumber(int(id))
+	return nil
+}
+
+func (t *Table) del(args ...value.Object) value.Object {
+	id := args[0].(*Number).Int
+	result, err := t.db.Exec("DELETE FROM "+t.name+" WHERE `id`=?", id)
+	if err != nil {
+		return nil
+	}
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return nil
+	}
+	if affected == 1 {
+		return NewBool(true)
+	}
 	return nil
 }
 
@@ -64,6 +102,10 @@ func (t *Table) Get(name string) value.Object {
 	case "new":
 		return NewFunction("sql.Table.new", func(args ...value.Object) value.Object {
 			return t.new(args...)
+		})
+	case "del":
+		return NewFunction("sql.Table.del", func(args ...value.Object) value.Object {
+			return t.del(args...)
 		})
 	}
 	return nil

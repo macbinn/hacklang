@@ -8,17 +8,50 @@ import (
 type functionHandler struct {
 }
 
+func parseParamList(tokens []*token.Token) ([]string, int, error) {
+	if tokens[0].Type == token.ID {
+		return []string{tokens[0].Value}, 1, nil
+	}
+	if tokens[0].Type != token.LPAREN {
+		return nil, 0, ErrSyntaxError
+	}
+	pos := 1
+	var params []string
+	for pos < len(tokens) {
+		if tokens[pos].Type == token.ID {
+			params = append(params, tokens[pos].Value)
+		} else {
+			return nil, 0, ErrSyntaxError
+		}
+		pos ++
+		if pos >= len(tokens) {
+			return nil, 0, ErrSyntaxError
+		}
+		if tokens[pos].Type == token.COMMA {
+			pos ++
+			continue
+		} else if tokens[pos].Type == token.RPAREN {
+			return params, pos + 1, nil
+		}
+	}
+	return nil, 0, ErrSyntaxError
+}
+
 func (functionHandler) Parse(tokens []*token.Token) (ast.Node, int, error) {
-	if len(tokens) < 5 || tokens[0].Type != token.ID ||
-		tokens[1].Type != token.EQUAL ||
-		tokens[2].Type != token.RARROW ||
-		tokens[3].Type != token.LBRACE {
+	params, pos, err := parseParamList(tokens)
+	if err != nil {
+		return nil, 0, ErrSyntaxError
+	}
+	if pos + 3 > len(tokens) ||
+		tokens[pos].Type != token.EQUAL ||
+		tokens[pos + 1].Type != token.RARROW ||
+		tokens[pos + 2].Type != token.LBRACE {
 		return nil, 0, ErrSyntaxError
 	}
 	node := &ast.FunctionNode{
-		Arguments: []string{tokens[0].Value},
+		Arguments: params,
 	}
-	pos := 4
+	pos += 3
 	for pos < len(tokens) {
 		if tokens[pos].Type == token.RBRACE {
 			pos++
