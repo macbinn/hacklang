@@ -130,9 +130,17 @@ type Router struct {
 var routers = map[string]Router{}
 
 func Route(args ...value.Object) value.Object {
-	pattern := args[0].(*String).S
-	getHandler := args[1].(*Function).fn
-	postHandler := args[2].(*Function).fn
+	param := args[0].(*Map).Val
+	var getHandler, postHandler func(...value.Object) value.Object
+	pattern := param["url"].(*String).S
+	get, ok := param["get"]
+	if ok {
+		getHandler = get.(*Function).fn
+	}
+	post, ok := param["post"]
+	if ok {
+		postHandler = post.(*Function).fn
+	}
 	p, err := regexp.Compile(pattern)
 	if err != nil {
 		log.Fatal(err)
@@ -189,15 +197,18 @@ func (handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				args = append(args, NewString(s))
 			}
 		}
+		var handler func(...value.Object) value.Object
 		switch r.Method {
 		case http.MethodGet:
-			prepare(ctx)
-			router.Get(args ...)
+			handler = router.Get
 		case http.MethodPost:
-			prepare(ctx)
-			router.Post(args ...)
+			handler = router.Post
 		default:
 			w.WriteHeader(405)
+		}
+		if handler != nil {
+			prepare(ctx)
+			handler(args...)
 		}
 	}
 	if !routerFound {

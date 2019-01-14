@@ -114,6 +114,10 @@ func TestRepl(t *testing.T) {
 			in: "if false { 1 }",
 			out: "<nil>",
 		},
+		{
+			in: "{a: 1}",
+			out: "{a: 1}",
+		},
 		// todo: make it work
 		//{"`hello`.upper().lower()\n", "hello\n -> "},
 	}
