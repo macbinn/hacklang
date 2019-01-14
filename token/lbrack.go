@@ -11,7 +11,7 @@ func (h staticStringHandler) Match(buf []byte) (*Token, int, error) {
 			Type:  h.Type,
 			Value: string(h.Type),
 		}
-		return t, 1, nil
+		return t, len(h.Matched), nil
 	}
 	return nil, 0, ErrNotMatched
 }
@@ -28,4 +28,5 @@ func init() {
 	Register(string(RPAREN), staticStringHandler{")", RPAREN})
 	Register(string(RARROW), staticStringHandler{">", RARROW})
 	Register(string(DOT), staticStringHandler{".", DOT})
+	Register(string(IF), staticStringHandler{"if", IF})
 }

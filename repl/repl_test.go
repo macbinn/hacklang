@@ -102,6 +102,18 @@ func TestRepl(t *testing.T) {
 			in: "a = {} a.a = 1 a.a",
 			out: "1",
 		},
+		{
+			in: "hash.ticket.getData(hash.ticket.generate(`secret`, `macbinn`, 86400), `secret`)",
+			out: "`macbinn`",
+		},
+		{
+			in: "if true { 1 }",
+			out: "1",
+		},
+		{
+			in: "if false { 1 }",
+			out: "<nil>",
+		},
 		// todo: make it work
 		//{"`hello`.upper().lower()\n", "hello\n -> "},
 	}

@@ -13,6 +13,7 @@ func match(buf []byte, m string) bool {
 var keywords = map[string]bool {
 	"true": true,
 	"false": true,
+	"if": true,
 }
 
 func (idHandler) Match(buf []byte) (*Token, int, error) {

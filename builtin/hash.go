@@ -2,11 +2,13 @@ package builtin
 
 import (
 	"crypto/hmac"
-	"crypto/sha1"
+	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
 	"github.com/macbinn/hacklang/value"
 	"golang.org/x/crypto/bcrypt"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -29,9 +31,14 @@ func BcryptCompare(args...value.Object) value.Object {
 	return BoolFalse
 }
 
+func hmacSum(key, data []byte) []byte {
+	mac := hmac.New(sha256.New, key)
+	mac.Write(data)
+	return mac.Sum(nil)
+}
+
 func hmacGenrate(key, text string) string {
-	h := hmac.New(sha1.New, []byte(key))
-	bs := h.Sum([]byte(text))
+	bs := hmacSum([]byte(key), []byte(text))
 	return base64.StdEncoding.EncodeToString(bs)
 }
 
@@ -47,8 +54,7 @@ func hmacCompare(hash, key, text string) bool {
 	if err != nil {
 		return false
 	}
-	h := hmac.New(sha1.New, []byte(key))
-	bs := h.Sum([]byte(text))
+	bs := hmacSum([]byte(key), []byte(text))
 	return hmac.Equal(bs, hashBytes)
 }
 
@@ -67,10 +73,32 @@ func TicketGenrate(args...value.Object) value.Object {
 	data := args[1].(*String).S
 	expire := int64(args[2].(*Number).Int)
 	t := time.Now().Unix() + expire
-	text := fmt.Sprintf("%s%d", data, t)
+	text := fmt.Sprintf("%d%s", t, data)
 	hash := hmacGenrate(key, text)
 	s := fmt.Sprintf("%s:%d:%s", data, t, hash)
 	return NewString(s)
+}
+
+func TicketGetData(args...value.Object) value.Object {
+	ticket := args[0].(*String).S
+	key := args[1].(*String).S
+	parts := strings.Split(ticket, ":")
+	if len(parts) != 3 {
+		return nil
+	}
+	data := parts[0]
+	t, err := strconv.Atoi(parts[1])
+	if err != nil {
+		return nil
+	}
+	if time.Now().Unix() > int64(t) {
+		return nil
+	}
+	hash := parts[2]
+	if hmacCompare(hash, key, parts[1] + data) {
+		return NewString(data)
+	}
+	return nil
 }
 
 func init() {
@@ -85,6 +113,7 @@ func init() {
 		}),
 		"ticket": NewMap(map[string]value.Object{
 			"generate": NewFunction("ticket.generate", TicketGenrate),
+			"getData": NewFunction("ticket.getData", TicketGetData),
 		}),
 	}))
 }

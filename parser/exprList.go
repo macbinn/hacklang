@@ -17,10 +17,13 @@ func (exprListHandler) Parse(tokens []*token.Token) (ast.Node, int, error) {
 			"expr",
 		)
 		if err != nil {
-			return nil, 0, ErrSyntaxError
+			break
 		}
 		node.Nodes = append(node.Nodes, expr)
 		pos += i
+	}
+	if len(node.Nodes) == 0 {
+		return nil, 0, ErrSyntaxError
 	}
 	return node, pos, nil
 }

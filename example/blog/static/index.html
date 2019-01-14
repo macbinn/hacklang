@@ -47,37 +47,68 @@
     .del {
       margin-left: 10px;
     }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 </head>
 <body>
   <div id="app">
     <div class="container">
-      <h2>{{ logo }}</h2>
-      <div class="form">
-        <div>
-          <input v-model="title" placeholder="title"/>
+      <div class="header">
+        <h2>{{ logo }}</h2>
+        <div v-if="user">{{ user.name }}</div>
+      </div>
+      <div v-if="user && user.id">
+        <div class="form">
+          <div>
+            <input v-model="title" placeholder="title"/>
+          </div>
+          <div>
+            <textarea v-model="content" placeholder="content" rows="4"></textarea>
+          </div>
+          <div>
+            <button @click="post">Post</button>
+          </div>
         </div>
-        <div>
-          <textarea v-model="content" placeholder="content" rows="4"></textarea>
-        </div>
-        <div>
-          <button @click="post">Post</button>
+        <div v-for="blog in blogs" class="blog">
+          <div class="title">{{ blog.title }}</div>
+          <div class="content">{{ blog.content }}</div>
+          <div class="op">
+            <div class="time">{{ blog.created_at }}</div>
+            <div class="del">
+              <a href="javascript:void(0)" @click="del(blog.id)">delete</a>
+            </div>
+          </div>
         </div>
       </div>
-      <div v-for="blog in blogs" class="blog">
-        <div class="title">{{ blog.title }}</div>
-        <div class="content">{{ blog.content }}</div>
-        <div class="op">
-          <div class="time">{{ blog.created_at }}</div>
-          <div class="del">
-            <a href="javascript:void(0)" @click="del(blog.id)">delete</a>
-          </div>
+      <div v-else class="form">
+        <div>
+          <input v-model="username" placeholder="username">
+        </div>
+        <div>
+          <input v-model="password" type="password" placeholder="password">
+        </div>
+        <div>
+          <button @click="signIn">Sign In</button>
         </div>
       </div>
     </div>
   </div>
   <script>
+    function apiFetch(url, config) {
+      config = config || {}
+      var headers = new Headers()
+      headers.append("x-user-ticket", localStorage.getItem("ticket"))
+      return fetch(url, Object.assign(config, {
+        headers: headers,
+      })).then(resp => {
+        return resp.json()
+      })
+    }
     var app = new Vue({
       el: "#app",
       data: {
@@ -85,15 +116,22 @@
         title: '',
         content: '',
         blogs: [],
+        user: {},
+        username: '',
+        password: '',
       },
       created() {
+        this.loadUser()
         this.loadBlogs()
       },
       methods: {
+        loadUser() {
+          apiFetch('/api/users/self').then(user => {
+            this.user = user
+          })
+        },
         loadBlogs() {
-          fetch('/api/blogs/').then(resp => {
-            return resp.json()
-          }).then(blogs => {
+          apiFetch('/api/blogs/').then(blogs => {
             this.blogs = blogs.sort((a, b) => {
               if (a.created_at < b.created_at) {
                 return 1
@@ -106,14 +144,12 @@
           if (!this.title || !this.content) {
             return
           }
-          fetch('/api/blogs/', {
+          apiFetch('/api/blogs/', {
             method: 'POST',
             body: JSON.stringify({
               title: this.title,
               content: this.content,
             })
-          }).then(resp => {
-            return resp.json()
           }).then(result => {
             if (result) {
               this.title = ''
@@ -123,13 +159,25 @@
           })
         },
         del(id) {
-          fetch(`/api/blogs/${id}`, {
+          apiFetch(`/api/blogs/${id}`, {
             method: 'POST',
-          }).then(resp => {
-            return resp.json()
           }).then(result => {
             if (result) {
               this.loadBlogs()
+            }
+          })
+        },
+        signIn() {
+          apiFetch(`/api/signIn`, {
+            method: 'POST',
+            body: JSON.stringify({
+              name: this.username,
+              password: this.password,
+            }),
+          }).then(result => {
+            if (result.ticket) {
+              this.user = result.user
+              localStorage.setItem('ticket', result.ticket)
             }
           })
         }

@@ -71,6 +71,10 @@ func TestParser_Parse(t *testing.T) {
 			code: "a\n\nb c\n",
 			types: []Type{ID, ID, ID},
 		},
+		{
+			code: "if a { b }",
+			types: []Type{IF, ID, LBRACE, ID, RBRACE},
+		},
 	}
 	for _, c := range cases {
 		p := NewParser([]byte(c.code))

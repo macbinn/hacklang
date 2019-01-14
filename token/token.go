@@ -27,6 +27,7 @@ const (
 	RPAREN Type = ")"
 	RARROW Type = ">"
 	DOT    Type = "."
+	IF Type = "if"
 )
 
 type Parser struct {

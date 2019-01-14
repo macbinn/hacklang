@@ -19,23 +19,20 @@ type WebContext struct {
 	Query value.Object
 }
 
-func (w *WebContext) Get(name string) value.Object {
-	switch name {
-	case "json":
-		return NewFunction("webContext.json", func(args ...value.Object) value.Object {
+func (w *WebContext) ToMap() *Map {
+	return NewMap(map[string]value.Object{
+		"json": NewFunction("webContext.json", func(args ...value.Object) value.Object {
 			w.Json(Convert(args[0]))
 			return nil
-		})
-	case "resp":
-		return NewFunction("webContext.resp", func(args ...value.Object) value.Object {
+		}),
+		"resp": NewFunction("webContext.resp", func(args ...value.Object) value.Object {
 			code := args[0].(*Number).Int
 			contentType := args[1].(*String).S
 			body := args[2].(*String).S
 			w.Resp(code, contentType, body)
 			return nil
-		})
-	case "static":
-		return NewFunction("webContext.static", func(args ...value.Object) value.Object {
+		}),
+		"static": NewFunction("webContext.static", func(args ...value.Object) value.Object {
 			file := args[0].(*String).S
 			bs, err := ioutil.ReadFile(file)
 			if err != nil {
@@ -44,15 +41,15 @@ func (w *WebContext) Get(name string) value.Object {
 			}
 			w.Resp(200, "text/html", string(bs))
 			return nil
-		})
-	case "body":
-		return w.readBody()
-	case "jsonBody":
-		return w.ReadJson()
-	case "query":
-		return w.ReadQuery()
-	}
-	return nil
+		}),
+		"body": w.readBody(),
+		"jsonBody": w.ReadJson(),
+		"query": w.ReadQuery(),
+		"header": NewFunction("webContext.header", func(args ...value.Object) value.Object {
+			name := args[0].(*String).S
+			return NewString(w.Req.Header.Get(name))
+		}),
+	})
 }
 
 func (w *WebContext) Repr() string {
@@ -72,12 +69,16 @@ func (w *WebContext) Json(v interface{}) {
 }
 
 func (w *WebContext) ReadJson() value.Object {
+	if w.Req.Method != http.MethodPost {
+		return nil
+	}
 	if w.JsonBody == nil {
 		var m map[string]interface{}
-		err := json.NewDecoder(w.Req.Body).Decode(&m)
+		err := json.Unmarshal([]byte(w.Body.S), &m)
+		//err := json.NewDecoder(w.Req.Body).Decode(&m)
 		if err != nil {
 			log.Printf("read json error %s", err)
-			w.error(err)
+			//w.error(err)
 			return nil
 		}
 		w.JsonBody = Obj(m)
@@ -146,8 +147,22 @@ func Route(args ...value.Object) value.Object {
 	return nil
 }
 
+var prepareHandlers []func(...value.Object) value.Object
+
+func Prepare(args ...value.Object) value.Object {
+	handler := args[0].(*Function).fn
+	prepareHandlers = append(prepareHandlers, handler)
+	return nil
+}
+
 type handler struct {
 
+}
+
+func prepare(ctx *Map) {
+	for _, handler := range prepareHandlers {
+		handler(ctx)
+	}
 }
 
 func (handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -159,10 +174,10 @@ func (handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		//log.Printf("matched: %v", matched)
 		routerFound = true
-		ctx := &WebContext{
+		ctx := (&WebContext{
 			Req: r,
 			w: w,
-		}
+		}).ToMap()
 		args := []value.Object{
 			ctx,
 		}
@@ -176,8 +191,10 @@ func (handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		switch r.Method {
 		case http.MethodGet:
+			prepare(ctx)
 			router.Get(args ...)
 		case http.MethodPost:
+			prepare(ctx)
 			router.Post(args ...)
 		default:
 			w.WriteHeader(405)
@@ -197,6 +214,7 @@ func Run(args ...value.Object) value.Object {
 var WebExports = NewMap(map[string]value.Object{
 	"route": NewFunction("web.route", Route),
 	"run": NewFunction("web.run", Run),
+	"prepare": NewFunction("web.prepare", Prepare),
 })
 
 func init() {

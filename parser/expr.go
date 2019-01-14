@@ -20,6 +20,7 @@ func (exprHandler) Parse(tokens []*token.Token) (ast.Node, int, error) {
 		"function",
 		"assign",
 		"dot",
+		"if",
 	)
 	if err != nil {
 		return nil, 0, ErrSyntaxError

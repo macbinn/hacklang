@@ -24,6 +24,11 @@ func TestExprListHandler_Parse(t *testing.T) {
 			pos: 22,
 			node: "<ExprList Nodes=[<Assign Left=<Id Name=a> Right=<String abc>> <Call Callee=<Id Name=print> Arguments=[<Call Callee=<Dot Left=<Id Name=a> Right=<Id Name=upper>> Arguments=[]>]> <Assign Left=<Id Name=b> Right=<String ABC>> <Call Callee=<Id Name=print> Arguments=[<Call Callee=<Dot Left=<Id Name=b> Right=<Id Name=lower>> Arguments=[]>]>]>",
 		},
+		{
+			code: "a b c }",
+			pos: 3,
+			node: "<ExprList Nodes=[<Id Name=a> <Id Name=b> <Id Name=c>]>",
+		},
 	}
 
 	testHandler(t, exprListHandler{}, cases)
