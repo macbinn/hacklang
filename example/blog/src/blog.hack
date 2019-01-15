@@ -10,7 +10,17 @@ web.route({
 web.route({
   url: `^/api/blogs/$`,
   get: ctx => {
-    ctx.json(dao.blogs.all())
+    blogs = dao.blogs.all()
+    blogs.forEach(blog => {
+      author = dao.users.find({
+        id: blog.authorId
+      })
+      blog.author = {
+        id: author.id
+        name: author.name
+      }
+    })
+    ctx.json(blogs)
   },
   post: ctx => {
     if ctx.user {

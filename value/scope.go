@@ -14,7 +14,7 @@ func NewScope(parent *Scope) *Scope {
 
 // Resolve resolve name in scope
 func (s *Scope) Resolve(name string) (Object, bool) {
-	for scope := s; scope != nil; scope = s.Parent {
+	for scope := s; scope != nil; scope = scope.Parent {
 		v, ok := scope.Vars[name]
 		if ok {
 			return v, true

@@ -18,6 +18,7 @@
     }
     a, a:visited {
       text-decoration: none;
+      color: #409EFF;
     }
     textarea {
       width: 500px;
@@ -35,9 +36,15 @@
       display: flex;
       flex-direction: column;
     }
-    .title {
+    .title h3 {
+      display: inline-block;
+      margin-right: 10px;
       font-size: 18px;
       font-weight: bolder;
+    }
+    .title span {
+      color: #909399;
+      font-size: 12px;
     }
     .op {
       display: flex;
@@ -45,12 +52,15 @@
       align-self: flex-end;
     }
     .del {
-      margin-left: 10px;
+      margin-right: 10px;
     }
     .header {
       display: flex;
       align-items: center;
       justify-content: space-between;
+    }
+    .signUp {
+      background-color: #67C23A;
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/vue"></script>
@@ -60,7 +70,10 @@
     <div class="container">
       <div class="header">
         <h2>{{ logo }}</h2>
-        <div v-if="user">{{ user.name }}</div>
+        <div v-if="user">
+          <span>{{ user.name }}</span>
+          <a href="#" @click="logout">logout</a>
+        </div>
       </div>
       <div v-if="user && user.id">
         <div class="form">
@@ -75,13 +88,16 @@
           </div>
         </div>
         <div v-for="blog in blogs" class="blog">
-          <div class="title">{{ blog.title }}</div>
+          <div class="title">
+            <h3>{{ blog.title }}</h3>
+            <span>{{ blog.author.name }}</span>
+          </div>
           <div class="content">{{ blog.content }}</div>
           <div class="op">
-            <div class="time">{{ blog.created_at }}</div>
-            <div class="del">
-              <a href="javascript:void(0)" @click="del(blog.id)">delete</a>
+            <div class="del" v-if="blog.authorId == user.id">
+              <a href="#" @click="del(blog.id)">delete</a>
             </div>
+            <div class="time">{{ blog.createdAt }}</div>
           </div>
         </div>
       </div>
@@ -93,7 +109,8 @@
           <input v-model="password" type="password" placeholder="password">
         </div>
         <div>
-          <button @click="signIn">Sign In</button>
+          <button @click="signIn">SignIn</button>
+          <button @click="signUp" class="signUp">SignUp</button>
         </div>
       </div>
     </div>
@@ -180,6 +197,23 @@
               localStorage.setItem('ticket', result.ticket)
             }
           })
+        },
+        signUp() {
+          apiFetch('/api/users/', {
+            method: 'POST',
+            body: JSON.stringify({
+              name: this.username,
+              password: this.password,
+            }),
+          }).then(result => {
+            if (result) {
+              this.signIn()
+            }
+          })
+        },
+        logout() {
+          this.user = null
+          localStorage.setItem('ticket', '')
         }
       },
     })

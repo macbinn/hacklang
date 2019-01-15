@@ -11,6 +11,12 @@ type List struct {
 }
 
 func (l *List) Get(name string) value.Object {
+	switch name {
+	case "forEach":
+		return NewFunction("list.forEach", func(args ...value.Object) value.Object {
+			return l.forEach(args...)
+		})
+	}
 	return nil
 }
 
@@ -38,30 +44,11 @@ func NewList(l *list.List) *List {
 	return &List{L: l}
 }
 
-var listMethods = map[string]interface{}{}
-
-func (l *List) G(name string) *value.Object {
-	//method, ok := listMethods[name]
-	//if !ok {
-	//	return nil
-	//}
-	//switch m := method.(type) {
-	//case func(*list.List, func(...interface{})):
-	//	return func(f func(...interface{})) {
-	//		m(l.l, f)
-	//	}
-	//}
+func (l *List) forEach(args...value.Object) value.Object {
+	f := args[0].(*Function).fn
+	for i := l.L.Front(); i != nil; i = i.Next() {
+		obj := i.Value.(value.Object)
+		f(obj)
+	}
 	return nil
-}
-
-func RegisterListMethod(name string, f interface{}) {
-	listMethods[name] = f
-}
-
-func init() {
-	RegisterListMethod("forEach", func(l *list.List, f func(...interface{})) {
-		for i := l.Front(); i != nil; i = i.Next() {
-			f(i.Value)
-		}
-	})
 }

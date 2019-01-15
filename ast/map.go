@@ -23,7 +23,11 @@ func (m *MapNode) String() string {
 }
 
 func (m *MapNode) Code() string {
-	return "{}"
+	var items []string
+	for name, node := range m.Init {
+		items = append(items, fmt.Sprintf("%s: %s", name, node.Code()))
+	}
+	return fmt.Sprintf("{\n%s\n}", strings.Join(items, "\n"))
 }
 
 func (m *MapNode) Eval(scope *value.Scope) value.Object {
