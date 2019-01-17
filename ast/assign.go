@@ -2,7 +2,6 @@ package ast
 
 import (
 	"fmt"
-	"github.com/macbinn/hacklang/builtin"
 	"github.com/macbinn/hacklang/value"
 )
 
@@ -23,17 +22,14 @@ func (a *AssignNode) Eval(scope *value.Scope) value.Object {
 	if a.Right == nil {
 		return nil
 	}
-	value := a.Right.Eval(scope)
+	val := a.Right.Eval(scope)
 	switch left := a.Left.(type) {
 	case *IdNode:
-		scope.Register(left.Name, value)
+		scope.Register(left.Name, val)
 	case *DotNode:
-		obj := left.Left.Eval(scope)
-		switch o := obj.(type) {
-		case *builtin.Map:
-			name := left.Right.(*IdNode).Name
-			o.Val[name] = value
-		}
+		obj := left.Left.Eval(scope).(value.Setter)
+		name := left.Right.(*IdNode).Name
+		obj.Set(name, val)
 	}
-	return value
+	return val
 }

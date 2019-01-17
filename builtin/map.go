@@ -9,6 +9,10 @@ type Map struct {
 	Val map[string]value.Object
 }
 
+func (m *Map) Set(name string, value value.Object) {
+	m.Val[name] = value
+}
+
 func (m *Map) Get(name string) value.Object {
 	return m.Val[name]
 }

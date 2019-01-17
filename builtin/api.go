@@ -2,7 +2,6 @@ package builtin
 
 import (
 	"fmt"
-	"github.com/macbinn/hacklang/value"
 )
 
 type Number struct {
@@ -11,10 +10,6 @@ type Number struct {
 
 func (n *Number) Repr() string {
 	return fmt.Sprintf("%d", n.Int)
-}
-
-func (n *Number) Get(name string) value.Object {
-	return nil
 }
 
 func NewNumber(v int) *Number {
@@ -32,10 +27,6 @@ func (b *Bool) Repr() string {
 		return "true"
 	}
 	return "false"
-}
-
-func (*Bool) Get(name string) value.Object {
-	return nil
 }
 
 func NewBool(v bool) *Bool {

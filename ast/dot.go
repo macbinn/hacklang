@@ -19,7 +19,7 @@ func (d *DotNode) String() string {
 }
 
 func (d *DotNode) Eval(scope *value.Scope) value.Object {
-	left := d.Left.Eval(scope)
+	left := d.Left.Eval(scope).(value.Getter)
 	right := d.Right.(*IdNode)
 	return left.Get(right.Name)
 }

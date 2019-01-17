@@ -61,9 +61,9 @@ func (t *Table) find(args...value.Object) value.Object {
 	m := args[0].(*Map).Val
 	var col []string
 	var val []interface{}
-	for name, value := range m {
+	for name, v := range m {
 		col = append(col, convertName(name) + "=?")
-		val = append(val, Convert(value))
+		val = append(val, Convert(v))
 	}
 	where := strings.Join(col, " and ")
 	query := fmt.Sprintf("select * from %s where %s", t.name, where)

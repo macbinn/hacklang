@@ -17,22 +17,26 @@ type WebContext struct {
 	Body *String
 	JsonBody value.Object
 	Query value.Object
+	data map[string]value.Object
 }
 
-func (w *WebContext) ToMap() *Map {
-	return NewMap(map[string]value.Object{
-		"json": NewFunction("webContext.json", func(args ...value.Object) value.Object {
+func (w *WebContext) Get(name string) value.Object {
+	switch name {
+	case "json":
+		return NewFunction("webContext.json", func(args ...value.Object) value.Object {
 			w.Json(Convert(args[0]))
 			return nil
-		}),
-		"resp": NewFunction("webContext.resp", func(args ...value.Object) value.Object {
+		})
+	case "resp":
+		return NewFunction("webContext.resp", func(args ...value.Object) value.Object {
 			code := args[0].(*Number).Int
 			contentType := args[1].(*String).S
 			body := args[2].(*String).S
 			w.Resp(code, contentType, body)
 			return nil
-		}),
-		"static": NewFunction("webContext.static", func(args ...value.Object) value.Object {
+		})
+	case "static":
+		return NewFunction("webContext.static", func(args ...value.Object) value.Object {
 			file := args[0].(*String).S
 			bs, err := ioutil.ReadFile(file)
 			if err != nil {
@@ -41,15 +45,21 @@ func (w *WebContext) ToMap() *Map {
 			}
 			w.Resp(200, "text/html", string(bs))
 			return nil
-		}),
-		"body": w.readBody(),
-		"jsonBody": w.ReadJson(),
-		"query": w.ReadQuery(),
-		"header": NewFunction("webContext.header", func(args ...value.Object) value.Object {
-			name := args[0].(*String).S
-			return NewString(w.Req.Header.Get(name))
-		}),
+		})
+	case "header": return NewFunction("webContext.header", func(args ...value.Object) value.Object {
+		name := args[0].(*String).S
+		return NewString(w.Req.Header.Get(name))
 	})
+	case "body": return w.readBody()
+	case "jsonBody": return w.ReadJson()
+	case "query": return w.ReadQuery()
+	default:
+		return w.data[name]
+	}
+}
+
+func (w *WebContext) Set(name string, value value.Object) {
+	w.data[name] = value
 }
 
 func (w *WebContext) Repr() string {
@@ -74,11 +84,10 @@ func (w *WebContext) ReadJson() value.Object {
 	}
 	if w.JsonBody == nil {
 		var m map[string]interface{}
-		err := json.Unmarshal([]byte(w.Body.S), &m)
-		//err := json.NewDecoder(w.Req.Body).Decode(&m)
+		err := json.NewDecoder(w.Req.Body).Decode(&m)
 		if err != nil {
 			log.Printf("read json error %s", err)
-			//w.error(err)
+			w.error(err)
 			return nil
 		}
 		w.JsonBody = Obj(m)
@@ -118,6 +127,14 @@ func (w *WebContext) readBody() *String {
 		w.Body = NewString(string(bs))
 	}
 	return w.Body
+}
+
+func NewWebContext(w http.ResponseWriter, r *http.Request) *WebContext {
+	return &WebContext{
+		w: w,
+		Req: r,
+		data: map[string]value.Object{},
+	}
 }
 
 type Router struct {
@@ -167,7 +184,7 @@ type handler struct {
 
 }
 
-func prepare(ctx *Map) {
+func prepare(ctx *WebContext) {
 	for _, handler := range prepareHandlers {
 		handler(ctx)
 	}
@@ -182,10 +199,7 @@ func (handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		//log.Printf("matched: %v", matched)
 		routerFound = true
-		ctx := (&WebContext{
-			Req: r,
-			w: w,
-		}).ToMap()
+		ctx := NewWebContext(w, r)
 		args := []value.Object{
 			ctx,
 		}
