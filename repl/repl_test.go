@@ -76,7 +76,7 @@ func TestRepl(t *testing.T) {
 		},
 		{
 			in: "i => { print(1) }",
-			out: "<function f>",
+			out: "<function>",
 		},
 		{
 			in: "json.encode(1)",
@@ -117,6 +117,34 @@ func TestRepl(t *testing.T) {
 		{
 			in: "{a: 1}",
 			out: "{a: 1}",
+		},
+		{
+			in: "true and true",
+			out: "true",
+		},
+		{
+			in: "false or true",
+			out: "true",
+		},
+		{
+			in: "not true",
+			out: "false",
+		},
+		{
+			in: "return 1",
+			out: "1",
+		},
+		{
+			in: "i => { i }(`hello`)",
+			out: "`hello`",
+		},
+		{
+			in: "i => { return i }(`hello return`)",
+			out: "`hello return`",
+		},
+		{
+			in: "i => { if i { return i } return false }(true)",
+			out: "true",
 		},
 		// todo: make it work
 		//{"`hello`.upper().lower()\n", "hello\n -> "},

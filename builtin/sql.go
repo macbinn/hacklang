@@ -62,7 +62,7 @@ func (t *Table) find(args...value.Object) value.Object {
 	var col []string
 	var val []interface{}
 	for name, value := range m {
-		col = append(col, name + "=?")
+		col = append(col, convertName(name) + "=?")
 		val = append(val, Convert(value))
 	}
 	where := strings.Join(col, " and ")

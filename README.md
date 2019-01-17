@@ -1,18 +1,28 @@
 ## hacklang
 The Hack programming language
 
-## run
+## build
 ```bash
 $ dep ensure
+$ make test && make build
 ```
 
-Start REPL shell
+Run file
 ```bash
-$ go run cmd/main.go
+$ ./bin/hacklang example/hello_world.hack
+```
+
+Format file
+```bash
+$ ./bin/hacklang --format example/hello_world.hack
+```
+
+Start REPL shell (without any args)
+```bash
+$ ./bin/hacklang
 ```
 
 ## example
-
 number
 ```javascript
 -> 1
@@ -46,13 +56,3 @@ function
 <function>
 ```
 See [example](./example) for more examples.
-
-### run file
-```bash
-$ go run cmd/main.go example/hello_world.hack
-```
-
-### format file
-```bash
-$ go run cmd/main.go --format example/hello_world.hack
-```

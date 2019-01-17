@@ -27,7 +27,7 @@ func TestCallHandler_Parse(t *testing.T) {
 		{
 			code: "i => { print(i) }()",
 			pos: 11,
-			node: "<Call Callee=<Function Arguments=[i], Body=[<Call Callee=<Id Name=print> Arguments=[<Id Name=i>]>]> Arguments=[]>",
+			node: "<Call Callee=<Function Arguments=[i], Body=<ExprList Nodes=[<Call Callee=<Id Name=print> Arguments=[<Id Name=i>]>]>> Arguments=[]>",
 		},
 		{
 			code:"print(a.b())",

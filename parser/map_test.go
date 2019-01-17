@@ -29,7 +29,7 @@ func TestMapHandler_Parse(t *testing.T) {
   }
 }`,
 			pos: 27,
-			node: "<Map a=<Number 1> b=<Function Arguments=[l], Body=[<Call Callee=<Dot Left=<Id Name=l> Right=<Id Name=forEach>> Arguments=[<Function Arguments=[i], Body=[<Call Callee=<Id Name=print> Arguments=[<Id Name=i>]>]>]>]>>",
+			node: "<Map a=<Number 1> b=<Function Arguments=[l], Body=<ExprList Nodes=[<Call Callee=<Dot Left=<Id Name=l> Right=<Id Name=forEach>> Arguments=[<Function Arguments=[i], Body=<ExprList Nodes=[<Call Callee=<Id Name=print> Arguments=[<Id Name=i>]>]>>]>]>>>",
 		},
 	}
 	testHandler(t, mapHandler{}, cases)

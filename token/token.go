@@ -28,6 +28,10 @@ const (
 	RARROW Type = ">"
 	DOT    Type = "."
 	IF Type = "if"
+	AND Type = "and"
+	OR Type = "or"
+	NOT Type = "not"
+	RETURN Type = "return"
 )
 
 type Parser struct {

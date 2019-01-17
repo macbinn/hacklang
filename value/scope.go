@@ -3,12 +3,14 @@ package value
 type Scope struct {
 	Vars   map[string]Object
 	Parent *Scope
+	Ret bool
 }
 
 func NewScope(parent *Scope) *Scope {
 	return &Scope{
 		Vars: map[string]Object{},
 		Parent: parent,
+		Ret: false,
 	}
 }
 

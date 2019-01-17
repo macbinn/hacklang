@@ -14,6 +14,10 @@ var keywords = map[string]bool {
 	"true": true,
 	"false": true,
 	"if": true,
+	"and": true,
+	"or": true,
+	"not": true,
+	"return": true,
 }
 
 func (idHandler) Match(buf []byte) (*Token, int, error) {

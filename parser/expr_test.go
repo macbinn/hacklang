@@ -37,7 +37,7 @@ func TestExprHandler_Parse(t *testing.T) {
 		{
 			code: "i => {}",
 			pos: 5,
-			node: "<Function Arguments=[i], Body=[]>",
+			node: "<Function Arguments=[i], Body=<nil>>",
 		},
 		{
 			code: "a = 1",

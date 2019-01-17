@@ -34,10 +34,18 @@ web.route({
 web.route({
   url: `^/api/blogs/(\d+)$`,
   post: (ctx, id) => {
-    if ctx.user {
-      ok = dao.blogs.del(id)
-      ctx.json(ok)
+    if not ctx.user {
+      return ctx.json(false)
     }
+    blog = dao.blogs.find({
+      id: id,
+      authorId: ctx.user.id
+    })
+    if not blog {
+      return ctx.json(false)
+    }
+    ok = dao.blogs.del(id)
+    ctx.json(ok)
   }
 })
 

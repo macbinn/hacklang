@@ -1,3 +1,0 @@
-i => {
-  print(`hello`, i)
-}

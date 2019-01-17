@@ -9,18 +9,12 @@ import (
 
 type FunctionNode struct {
 	Arguments []string
-	Body      []Node
-	Scope     *value.Scope
+	Body      Node
 }
 
 func (f *FunctionNode) Code() string {
 	args := strings.Join(f.Arguments, ", ")
-	var bodys []string
-	for _, node := range f.Body {
-		bodys = append(bodys, "  " + node.Code())
-	}
-	body := strings.Join(bodys, "\n")
-	return fmt.Sprintf("(%s) => {\n%s\n}", args, body)
+	return fmt.Sprintf("(%s) => {\n%s\n}", args, f.Body.Code())
 }
 
 func (f *FunctionNode) String() string {
@@ -28,16 +22,13 @@ func (f *FunctionNode) String() string {
 }
 
 func (f *FunctionNode) Eval(scope *value.Scope) value.Object {
-	f.Scope = value.NewScope(scope)
-	return builtin.NewFunction("f", func(args ...value.Object) value.Object {
+	return builtin.NewFunction("", func(args ...value.Object) value.Object {
+		fnScope := value.NewScope(scope)
 		for i, arg := range args {
 			if i < len(f.Arguments) {
-				f.Scope.Register(f.Arguments[i], arg)
+				fnScope.Register(f.Arguments[i], arg)
 			}
 		}
-		for _, node := range f.Body {
-			node.Eval(f.Scope)
-		}
-		return nil
+		return f.Body.Eval(fnScope)
 	})
 }

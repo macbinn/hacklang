@@ -29,4 +29,8 @@ func init() {
 	Register(string(RARROW), staticStringHandler{">", RARROW})
 	Register(string(DOT), staticStringHandler{".", DOT})
 	Register(string(IF), staticStringHandler{"if", IF})
+	Register(string(AND), staticStringHandler{"and", AND})
+	Register(string(OR), staticStringHandler{"or", OR})
+	Register(string(NOT), staticStringHandler{"not", NOT})
+	Register(string(RETURN), staticStringHandler{"return", RETURN})
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/macbinn/hacklang/builtin"
 	"github.com/macbinn/hacklang/value"
+	"sort"
 	"strings"
 )
 
@@ -19,6 +20,7 @@ func (m *MapNode) String() string {
 	for name, node := range m.Init {
 		items = append(items, fmt.Sprintf("%s=%s", name, node))
 	}
+	sort.Strings(items)
 	return fmt.Sprintf("<Map %s>", strings.Join(items, " "))
 }
 
@@ -27,6 +29,7 @@ func (m *MapNode) Code() string {
 	for name, node := range m.Init {
 		items = append(items, fmt.Sprintf("%s: %s", name, node.Code()))
 	}
+	sort.Strings(items)
 	return fmt.Sprintf("{\n%s\n}", strings.Join(items, "\n"))
 }
 

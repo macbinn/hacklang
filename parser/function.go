@@ -52,19 +52,19 @@ func (functionHandler) Parse(tokens []*token.Token) (ast.Node, int, error) {
 		Arguments: params,
 	}
 	pos += 3
-	for pos < len(tokens) {
-		if tokens[pos].Type == token.RBRACE {
-			pos++
-			return node, pos, nil
-		}
-
-		expr, i, err := Parse("expr", tokens[pos:])
-		if err != nil {
-			return nil, 0, ErrSyntaxError
-		}
-		pos += i
-		node.Body = append(node.Body, expr)
-
+	if tokens[pos].Type == token.RBRACE {
+		pos++
+		return node, pos, nil
+	}
+	body, i, err := Parse("exprList", tokens[pos:])
+	if err != nil {
+		return nil, 0, ErrSyntaxError
+	}
+	node.Body = body
+	pos += i
+	if pos < len(tokens) && tokens[pos].Type == token.RBRACE {
+		pos++
+		return node, pos, nil
 	}
 	return nil, 0, ErrSyntaxError
 }

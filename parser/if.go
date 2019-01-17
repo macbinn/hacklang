@@ -21,7 +21,7 @@ func (ifHandler) Parse(tokens []*token.Token) (ast.Node, int, error) {
 		return nil, 0, ErrSyntaxError
 	}
 	pos ++
-	if tokens[pos].Type != token.LBRACE {
+	if pos >= len(tokens) || tokens[pos].Type != token.LBRACE {
 		return nil, 0, ErrSyntaxError
 	}
 	pos ++

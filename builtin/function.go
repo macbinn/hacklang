@@ -11,6 +11,9 @@ type Function struct {
 }
 
 func (f *Function) Repr() string {
+	if f.Name.S == "" {
+		return "<function>"
+	}
 	return fmt.Sprintf("<function %s>", f.Name.S)
 }
 

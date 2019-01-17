@@ -21,9 +21,40 @@ func (exprHandler) Parse(tokens []*token.Token) (ast.Node, int, error) {
 		"assign",
 		"dot",
 		"if",
+		"not",
+		"return",
 	)
 	if err != nil {
 		return nil, 0, ErrSyntaxError
+	}
+	if pos < len(tokens) {
+		t := tokens[pos]
+		switch t.Type {
+		case token.AND:
+			pos ++
+			rightExpr, i, err := ParseGreedy(tokens[pos:], "expr")
+			if err != nil {
+				return nil, 0, ErrSyntaxError
+			}
+			pos += i
+			node := &ast.AndNode{
+				Left:  expr,
+				Right: rightExpr,
+			}
+			return node, pos, nil
+		case token.OR:
+			pos ++
+			rightExpr, i, err := ParseGreedy(tokens[pos:], "expr")
+			if err != nil {
+				return nil, 0, ErrSyntaxError
+			}
+			pos += i
+			node := &ast.OrNode{
+				Left:  expr,
+				Right: rightExpr,
+			}
+			return node, pos, nil
+		}
 	}
 	return expr, pos, nil
 }
