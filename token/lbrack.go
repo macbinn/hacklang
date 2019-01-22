@@ -23,6 +23,7 @@ func init() {
 	Register(string(COMMA), staticStringHandler{",", COMMA})
 	Register(string(LBRACE), staticStringHandler{"{", LBRACE})
 	Register(string(RBRACE), staticStringHandler{"}", RBRACE})
+	Register(string(EQUALS), staticStringHandler{"==", EQUALS})
 	Register(string(EQUAL), staticStringHandler{"=", EQUAL})
 	Register(string(LPAREN), staticStringHandler{"(", LPAREN})
 	Register(string(RPAREN), staticStringHandler{")", RPAREN})
@@ -33,4 +34,8 @@ func init() {
 	Register(string(OR), staticStringHandler{"or", OR})
 	Register(string(NOT), staticStringHandler{"not", NOT})
 	Register(string(RETURN), staticStringHandler{"return", RETURN})
+	Register(string(PLUS), staticStringHandler{"+", PLUS})
+	Register(string(MINS), staticStringHandler{"-", MINS})
+	Register(string(MUL), staticStringHandler{"*", MUL})
+	Register(string(DEV), staticStringHandler{"/", DEV})
 }

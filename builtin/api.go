@@ -30,12 +30,13 @@ func (b *Bool) Repr() string {
 }
 
 func NewBool(v bool) *Bool {
-	return &Bool{
-		Val: v,
+	if v {
+		return BoolTrue
 	}
+	return BoolFalse
 }
 
 var (
-	BoolTrue = NewBool(true)
-	BoolFalse = NewBool(false)
+	BoolTrue  = &Bool{true}
+	BoolFalse = &Bool{false}
 )

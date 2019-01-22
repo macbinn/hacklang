@@ -27,11 +27,16 @@ const (
 	RPAREN Type = ")"
 	RARROW Type = ">"
 	DOT    Type = "."
-	IF Type = "if"
-	AND Type = "and"
-	OR Type = "or"
-	NOT Type = "not"
+	IF     Type = "if"
+	AND    Type = "and"
+	OR     Type = "or"
+	NOT    Type = "not"
 	RETURN Type = "return"
+	PLUS   Type = "+"
+	MINS   Type = "-"
+	MUL    Type = "*"
+	DEV    Type = "/"
+	EQUALS Type = "=="
 )
 
 type Parser struct {
@@ -75,12 +80,20 @@ func (p *Parser) NextToken() (*Token, error) {
 		}
 		c = p.buf[p.pos]
 	}
+	maxPos := 0
+	var selectedToken *Token
 	for _, handler := range handlers {
 		token, pos, err := handler.Match(p.buf[p.pos:])
 		if err == nil {
-			p.pos += pos
-			return token, nil
+			if pos > maxPos {
+				maxPos = pos
+				selectedToken = token
+			}
 		}
+	}
+	if maxPos > 0 {
+		p.pos += maxPos
+		return selectedToken, nil
 	}
 	return nil, ErrNotToken
 }

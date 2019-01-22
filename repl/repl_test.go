@@ -15,136 +15,164 @@ func TestRepl(t *testing.T) {
 		out string
 	}{
 		{
-			in: "1",
+			in:  "1",
 			out: "1",
 		},
 		{
-			in: "`hello`",
+			in:  "`hello`",
 			out: "`hello`",
 		},
 		{
-			in: "true",
+			in:  "true",
 			out: "true",
 		},
 		{
-			in: "a",
+			in:  "a",
 			out: "<nil>",
 		},
 		{
-			in: "a = 1 a",
+			in:  "a = 1 a",
 			out: "1",
 		},
 		{
-			in: "`hello`.upper()",
+			in:  "`hello`.upper()",
 			out: "`HELLO`",
 		},
 		{
-			in: "type(1)",
+			in:  "type(1)",
 			out: "`number`",
 		},
 		{
-			in: "type(`hello`)",
+			in:  "type(`hello`)",
 			out: "`string`",
 		},
 		{
-			in: "type([1, 2])",
+			in:  "type([1, 2])",
 			out: "`list`",
 		},
 		{
-			in: "type(true)",
+			in:  "type(true)",
 			out: "`bool`",
 		},
 		{
-			in: "type(type)",
+			in:  "type(type)",
 			out: "`function`",
 		},
 		{
-			in: "type(web)",
+			in:  "type(web)",
 			out: "`map`",
 		},
 		{
-			in: "sum(1, 2)",
+			in:  "sum(1, 2)",
 			out: "3",
 		},
 		{
-			in: "sum(1, 2, 3, 4)",
+			in:  "sum(1, 2, 3, 4)",
 			out: "10",
 		},
 		{
-			in: "[1, 2, 3]",
+			in:  "[1, 2, 3]",
 			out: "[1, 2, 3]",
 		},
 		{
-			in: "i => { print(1) }",
+			in:  "i => { print(1) }",
 			out: "<function>",
 		},
 		{
-			in: "json.encode(1)",
+			in:  "json.encode(1)",
 			out: "`1`",
 		},
 		{
-			in: "json.encode(`hello`)",
+			in:  "json.encode(`hello`)",
 			out: "`\"hello\"`",
 		},
 		{
-			in: "json.encode(true)",
+			in:  "json.encode(true)",
 			out: "`true`",
 		},
 		{
-			in: "json.encode([1, 2, 3])",
+			in:  "json.encode([1, 2, 3])",
 			out: "`[1,2,3]`",
 		},
 		{
-			in: "{}",
+			in:  "{}",
 			out: "{}",
 		},
 		{
-			in: "a = {} a.a = 1 a.a",
+			in:  "a = {} a.a = 1 a.a",
 			out: "1",
 		},
 		{
-			in: "hash.ticket.getData(hash.ticket.generate(`secret`, `macbinn`, 86400), `secret`)",
+			in:  "hash.ticket.getData(hash.ticket.generate(`secret`, `macbinn`, 86400), `secret`)",
 			out: "`macbinn`",
 		},
 		{
-			in: "if true { 1 }",
+			in:  "if true { 1 }",
 			out: "1",
 		},
 		{
-			in: "if false { 1 }",
+			in:  "if false { 1 }",
 			out: "<nil>",
 		},
 		{
-			in: "{a: 1}",
+			in:  "{a: 1}",
 			out: "{a: 1}",
 		},
 		{
-			in: "true and true",
+			in:  "true and true",
 			out: "true",
 		},
 		{
-			in: "false or true",
+			in:  "false or true",
 			out: "true",
 		},
 		{
-			in: "not true",
+			in:  "not true",
 			out: "false",
 		},
 		{
-			in: "return 1",
+			in:  "return 1",
 			out: "1",
 		},
 		{
-			in: "i => { i }(`hello`)",
+			in:  "i => { i }(`hello`)",
 			out: "`hello`",
 		},
 		{
-			in: "i => { return i }(`hello return`)",
+			in:  "i => { return i }(`hello return`)",
 			out: "`hello return`",
 		},
 		{
-			in: "i => { if i { return i } return false }(true)",
+			in:  "i => { if i { return i } return false }(true)",
 			out: "true",
+		},
+		{
+			in:  "1 + 1",
+			out: "2",
+		},
+		{
+			in:  "2 - 1",
+			out: "1",
+		},
+		{
+			in:  "2 * 3",
+			out: "6",
+		},
+		{
+			in:  "6 / 3",
+			out: "2",
+		},
+		{
+			in:  "1 == 1",
+			out: "true",
+		},
+		{
+			in:  "`abc` == `abc`",
+			out: "true",
+		},
+		{
+			in:  "`abc` == `1bc`",
+			out: "false",
 		},
 		// todo: make it work
 		//{"`hello`.upper().lower()\n", "hello\n -> "},

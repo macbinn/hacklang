@@ -31,7 +31,7 @@ func (exprHandler) Parse(tokens []*token.Token) (ast.Node, int, error) {
 		t := tokens[pos]
 		switch t.Type {
 		case token.AND:
-			pos ++
+			pos++
 			rightExpr, i, err := ParseGreedy(tokens[pos:], "expr")
 			if err != nil {
 				return nil, 0, ErrSyntaxError
@@ -43,13 +43,73 @@ func (exprHandler) Parse(tokens []*token.Token) (ast.Node, int, error) {
 			}
 			return node, pos, nil
 		case token.OR:
-			pos ++
+			pos++
 			rightExpr, i, err := ParseGreedy(tokens[pos:], "expr")
 			if err != nil {
 				return nil, 0, ErrSyntaxError
 			}
 			pos += i
 			node := &ast.OrNode{
+				Left:  expr,
+				Right: rightExpr,
+			}
+			return node, pos, nil
+		case token.PLUS:
+			pos++
+			rightExpr, i, err := ParseGreedy(tokens[pos:], "expr")
+			if err != nil {
+				return nil, 0, ErrSyntaxError
+			}
+			pos += i
+			node := &ast.Add{
+				Left:  expr,
+				Right: rightExpr,
+			}
+			return node, pos, nil
+		case token.MINS:
+			pos++
+			rightExpr, i, err := ParseGreedy(tokens[pos:], "expr")
+			if err != nil {
+				return nil, 0, ErrSyntaxError
+			}
+			pos += i
+			node := &ast.Min{
+				Left:  expr,
+				Right: rightExpr,
+			}
+			return node, pos, nil
+		case token.MUL:
+			pos++
+			rightExpr, i, err := ParseGreedy(tokens[pos:], "expr")
+			if err != nil {
+				return nil, 0, ErrSyntaxError
+			}
+			pos += i
+			node := &ast.Mul{
+				Left:  expr,
+				Right: rightExpr,
+			}
+			return node, pos, nil
+		case token.DEV:
+			pos++
+			rightExpr, i, err := ParseGreedy(tokens[pos:], "expr")
+			if err != nil {
+				return nil, 0, ErrSyntaxError
+			}
+			pos += i
+			node := &ast.Dev{
+				Left:  expr,
+				Right: rightExpr,
+			}
+			return node, pos, nil
+		case token.EQUALS:
+			pos++
+			rightExpr, i, err := ParseGreedy(tokens[pos:], "expr")
+			if err != nil {
+				return nil, 0, ErrSyntaxError
+			}
+			pos += i
+			node := &ast.Equals{
 				Left:  expr,
 				Right: rightExpr,
 			}
